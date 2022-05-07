@@ -125,9 +125,9 @@ func (c *collect) getEntity() {
 	sql := fmt.Sprintf(`SELECT e.EntityID AS entityId, 
 			max( CASE props.propertyKey WHEN 'ent.monitorstatus' THEN prop.PropertyValue ELSE NULL END ) AS monitorstatus, 
 			max( CASE props.propertyKey WHEN 'ent.monitorip' THEN prop.PropertyValue ELSE NULL END ) AS ip, 
-			max( CASE props.propertyKey WHEN 'ent.monitor.port' THEN prop.PropertyValue ELSE NULL END ) AS PORT, 
+			max( CASE props.propertyKey WHEN 'ent.monitor.port' THEN prop.PropertyValue ELSE NULL END ) AS port, 
 			max( CASE props.propertyKey WHEN 'ent.username' THEN prop.PropertyValue ELSE NULL END ) AS username, 
-			max( CASE props.propertyKey WHEN 'ent.password' THEN prop.PropertyValue ELSE NULL END ) AS PASSWORD 
+			max( CASE props.propertyKey WHEN 'ent.password' THEN prop.PropertyValue ELSE NULL END ) AS password 
 			FROM cp_ci_entity e  
 			JOIN cp_ci_model m ON e.modelID = m.ModelID  
 			AND e.isdeleted = 0  
