@@ -99,9 +99,6 @@ func (c *collect) toCollect() []*common.Metric {
 		common.Error.Printf("Get host info error :%s \n", e)
 		return nil
 	}
-	version := hostInfo["server_data"].(map[string]interface{})["Version"].(string)
-	// 入库版本号
-	c.saveVersion(version)
 	fmt.Printf("CDP获取hostinfo：%s \n", hostInfo)
 	// 获取disk信息
 	diskInfo, e := c.getDiskInfo(hostInfo, cookie)
@@ -202,52 +199,56 @@ func (c *collect) sendDataToKafka(metrics []*common.Metric) {
 func (c *collect) getDiskInfo(hostInfo map[string]interface{}, cookie string) ([]map[string]interface{}, error) {
 	diskInfo := make([]map[string]interface{}, 0)
 	URL := UrltoEncode(fmt.Sprintf("http://%s:%d/api/disasterTask/list_hosts", c.entity.IPAddress, c.entity.Port))
-	for _, hosts := range hostInfo["server_data"].(map[string]interface{})["Hosts"].([]interface{}) {
-		host := hosts.(map[string]interface{})
+	for _, serverDatas := range hostInfo["server_data"].([]interface{}) {
+		server := serverDatas.(map[string]interface{})
+		for _, hosts := range server["Hosts"].([]interface{}) {
+			host := hosts.(map[string]interface{})
+			data := make(map[string]interface{})
+			data["AgentId"] = host["AgentId"].(float64)
+			data["serverIp"] = host["server_ip"].(string)
+			bytesData, err := json.Marshal(data)
+			if err != nil {
+				fmt.Println(err)
+				common.Error.Println(err)
+				return nil, err
+			}
+			u, _ := url.ParseRequestURI(URL)
+			urlStr := u.String()
+			httpClient := &http.Client{}
+			request, err := http.NewRequest("POST", urlStr, bytes.NewReader(bytesData))
+			if err != nil {
+				fmt.Println(err)
+				common.Error.Println(err)
+				return nil, err
+			}
 
-		data := make(map[string]string)
-		data["AgentId"] = host["AgentId"].(string)
-		data["serverIp"] = host["server_ip"].(string)
-		bytesData, err := json.Marshal(data)
-		if err != nil {
-			fmt.Println(err)
-			common.Error.Println(err)
-			return nil, err
-		}
+			request.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Cookie", cookie)
+			response, err := httpClient.Do(request)
+			if err != nil {
+				fmt.Println(err)
+				common.Error.Println(err)
+				return nil, err
+			}
+			if response.StatusCode != 200 {
+				common.Error.Printf("get diskinfo error, response code: %d \n", response.StatusCode)
+				fmt.Printf("get diskinfo error, response code: %d \n", response.StatusCode)
+				return nil, nil
+			}
 
-		u, _ := url.ParseRequestURI(URL)
-		urlStr := u.String()
-		httpClient := &http.Client{}
-		request, err := http.NewRequest("POST", urlStr, bytes.NewReader(bytesData))
-		defer request.Body.Close()
-		if err != nil {
-			fmt.Println(err)
-			common.Error.Println(err)
-			return nil, err
+			body, _ := ioutil.ReadAll(response.Body)
+			a := make(map[string]interface{})
+			_ = json.Unmarshal(body, &a)
+			if len(a) != 0 {
+				bytes, _ := json.Marshal(a)
+				saveToFile(fmt.Sprintf("%d_DiskInfo", c.entity.EntityID), string(bytes))
+			}
+			fmt.Println(a)
+			diskInfo = append(diskInfo, a)
+			// 结束在关闭
+			request.Body.Close()
+			response.Body.Close()
 		}
-
-		request.Header.Set("contentType", "application/json")
-		request.Header.Set("Cookie", cookie)
-		response, err := httpClient.Do(request)
-		if err != nil {
-			fmt.Println(err)
-			common.Error.Println(err)
-			return nil, err
-		}
-		if response.StatusCode != 200 {
-			common.Error.Printf("get diskinfo error, response code: %d \n", response.StatusCode)
-			fmt.Printf("get diskinfo error, response code: %d \n", response.StatusCode)
-			return nil, nil
-		}
-
-		body, _ := ioutil.ReadAll(response.Body)
-		a := make(map[string]interface{})
-		_ = json.Unmarshal(body, &a)
-		if len(a) != 0 {
-			bytes, _ := json.Marshal(a)
-			saveToFile(fmt.Sprintf("%d_DiskInfo", c.entity.EntityID), string(bytes))
-		}
-		diskInfo = append(diskInfo, a)
 	}
 	return diskInfo, nil
 }
@@ -272,7 +273,7 @@ func (c *collect) getHostInfo(cookie string) (map[string]interface{}, error) {
 		common.Error.Println(err)
 		return nil, err
 	}
-	request.Header.Set("contentType", "application/json")
+	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Cookie", cookie)
 	response, err := httpClient.Do(request)
 	if err != nil {
@@ -338,13 +339,13 @@ func (c *collect) saveVersion(version string) {
 	c.mysqlClinet.GetConn()
 	defer c.mysqlClinet.CloesConn()
 
-	sql := fmt.Sprintf(`select PropertyValue from cp_ci_entity_prop where EntityID = %s AND PropertyID = %d`, c.entity.EntityID, 116)
+	sql := fmt.Sprintf(`select PropertyValue from cp_ci_entity_prop where EntityID = %d AND PropertyID = %d`, c.entity.EntityID, 116)
 	result := c.mysqlClinet.Query(sql)
 	// 长度大于0 则 做更新操作 否则做新增
 	if len(result) > 0 {
-		sql = fmt.Sprintf(`update cp_ci_entity_prop set PropertyValue = '%s' where EntityID = %s and PropertyID = %d and IsDeleted =0`, version, c.entity.EntityID, 116)
+		sql = fmt.Sprintf(`update cp_ci_entity_prop set PropertyValue = '%s' where EntityID = %d and PropertyID = %d and IsDeleted =0`, version, c.entity.EntityID, 116)
 	} else {
-		sql = fmt.Sprintf(`INSERT INTO cp_ci_entity_prop (EntityID, PropertyID, PropertyValue, CreateTime, CreateUser, UpdateUser, UpdateTime, IsDeleted, MonitorPropID) VALUES (%s, %d, "%s", now(), 0, 0, NULL, 0, NULL)`, c.entity.EntityID, 116, version)
+		sql = fmt.Sprintf(`INSERT INTO cp_ci_entity_prop (EntityID, PropertyID, PropertyValue, CreateTime, CreateUser, UpdateUser, UpdateTime, IsDeleted, MonitorPropID) VALUES (%d, %d, "%s", now(), 0, 0, NULL, 0, NULL)`, c.entity.EntityID, 116, version)
 	}
 	c.mysqlClinet.Exec(sql)
 	common.Info.Printf("版本号更新成功！ version:%s \n", version)

@@ -32,7 +32,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"state":        3,
 		"mode":         2,
 		"encryptMode":  0,
-		"backupRate":   0.00,
+		"backupRate":   "0.00",
 		"finishedRate": "100.00%",
 		"beginTime":    "2022-03-11 15:54:08",
 		"endTime":      "2022-03-11 15:54:16",

@@ -64,7 +64,7 @@ func verify(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("验证成功")
 	}
 
-	if err := json.NewEncoder(writer).Encode(request); err != nil {
+	if err := json.NewEncoder(writer).Encode(result); err != nil {
 		log.Fatal(err)
 	}
 

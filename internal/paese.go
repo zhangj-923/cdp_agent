@@ -9,25 +9,27 @@ func parseHostInfo(hostInfo map[string]interface{}, alertMetricDict map[string]s
 		return nil
 	}
 	metrics := make([]*common.Metric, 0)
-	for _, hosts := range hostInfo["server_data"].(map[string]interface{})["Hosts"].([]interface{}) {
-		host := hosts.(map[string]interface{})
+	for _, serverDatas := range hostInfo["server_data"].([]interface{}) {
+		server := serverDatas.(map[string]interface{})
+		for _, hosts := range server["Hosts"].([]interface{}) {
+			host := hosts.(map[string]interface{})
+			cdpHostTags := map[string]interface{}{
+				"clientIp": host["IP"].(string),
+				"agentId":  int(host["AgentId"].(float64)),
+			}
+			cdpHostFileds := map[string]interface{}{
+				"agentVersion": host["AgentVersion"].(string),
+				"hostName":     host["Hostname"].(string),
+				"serverIp":     host["server_ip"].(string),
+			}
 
-		cdpHostTags := map[string]interface{}{
-			"clientIp": host["IP"].(string),
-			"agentId":  host["AgentId"].(string),
+			cdpHostMetrics, err := common.Format(cdpHostFileds, cdpHostTags, "cdp.hostinfo", alertMetricDict)
+			if err != nil {
+				common.Error.Println(err)
+				return make([]*common.Metric, 0)
+			}
+			metrics = append(metrics, cdpHostMetrics...)
 		}
-		cdpHostFileds := map[string]interface{}{
-			"agentVersion": host["AgentVersion"].(string),
-			"hostName":     host["Hostname"].(string),
-			"serverIp":     host["server_ip"].(string),
-		}
-
-		cdpHostMetrics, err := common.Format(cdpHostFileds, cdpHostTags, "cdp.hostinfo", alertMetricDict)
-		if err != nil {
-			common.Error.Println(err)
-			return make([]*common.Metric, 0)
-		}
-		metrics = append(metrics, cdpHostMetrics...)
 	}
 	return metrics
 }
@@ -40,17 +42,27 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 	for _, diskInfo := range infos {
 		for _, disks := range diskInfo["Disks"].([]interface{}) {
 			disk := disks.(map[string]interface{})
-
+			flag := false
+			for _, partitions := range disk["Partitions"].([]interface{}) {
+				partition := partitions.(map[string]interface{})
+				if int(partition["Backup"].(float64)) == 1 {
+					flag = true
+					break
+				}
+			}
+			if !flag {
+				continue
+			}
 			cdpDiskTags := map[string]interface{}{
 				"clientIp": diskInfo["IP"].(string),
-				"agentId":  diskInfo["AgentId"].(string),
-				"cdpId":    disk["CdpId"].(string),
+				"agentId":  int(diskInfo["AgentId"].(float64)),
+				"cdpId":    int(disk["CdpId"].(float64)),
 			}
 			cdpDiskFileds := map[string]interface{}{
-				"state":        disk["State"].(int64),
-				"mode":         disk["Mode"].(int64),
-				"encryptMode":  disk["EncryptMode"].(int64),
-				"backupRate":   disk["BackupRate"].(float64),
+				"state":        int(disk["State"].(float64)),
+				"mode":         int(disk["Mode"].(float64)),
+				"encryptMode":  int(disk["EncryptMode"].(float64)),
+				"backupRate":   disk["BackupRate"].(string),
 				"finishedRate": disk["FinishedRate"].(string),
 				"beginTime":    disk["BeginTime"].(string),
 				"endTime":      disk["EndTime"].(string),
