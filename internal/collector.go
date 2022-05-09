@@ -138,6 +138,10 @@ func (c *collect) getEntity() {
 			GROUP BY e.EntityID  
 			HAVING monitorstatus = 1`)
 	result := c.mysqlClinet.Query(sql)
+	if len(result) <= 0 {
+		common.Info.Println("get entity is null")
+		fmt.Println("get entity is null")
+	}
 	entityList := make([]common.Endpoint, 0)
 	for e := range result {
 		entityMap := result[e]
