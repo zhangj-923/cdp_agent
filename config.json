@@ -5,8 +5,8 @@
   "interval_time": 5,
   "endpoint": [
     {
-      "entity_id": 11,
-      "ipAddress": "192.168.1.83",
+      "entity_id": 24,
+      "ipAddress": "192.168.1.23",
       "port": 9080,
       "username": "admin",
       "password": "Cdp12345"

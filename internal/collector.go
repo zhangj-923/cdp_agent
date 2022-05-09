@@ -170,6 +170,8 @@ func (c *collect) sendDataToKafka(metrics []*common.Metric) {
 		}
 		defer kafkaClient.Close()
 
+		timeNow := time.Now().UnixNano() / 1e6
+		timeUnixStr := strconv.FormatInt(timeNow, 10)
 		// 拆分数据 按20条进行拆分
 		data := cutOffList(metrics, 20)
 		for i := range data {
@@ -188,8 +190,6 @@ func (c *collect) sendDataToKafka(metrics []*common.Metric) {
 			icopPkg.SetCommandCode("")
 			icopPkg.SetIsUpSend(true)
 			icopPkg.SetData(string(jsonData))
-			timeNow := time.Now().UnixNano() / 1e6
-			timeUnixStr := strconv.FormatInt(timeNow, 10)
 			icopPkg.SetRecordTime(timeUnixStr)
 			//kafka send data
 			kafkaClient.Send(icopPkg.EncodePackage())
