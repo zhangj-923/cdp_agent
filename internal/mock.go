@@ -26,9 +26,10 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpDiskTags11 := map[string]interface{}{
 		"clientIp": "192.168.1.75",
 		"agentId":  1,
-		"cdpId":    1,
+		"diskId":   0,
 	}
 	cdpDiskFileds11 := map[string]interface{}{
+		"cdpId":        1,
 		"state":        3,
 		"mode":         2,
 		"encryptMode":  0,
@@ -48,9 +49,10 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpdisktags12 := map[string]interface{}{
 		"clientIp": "192.168.1.75",
 		"agentId":  1,
-		"cdpId":    2,
+		"diskId":   1,
 	}
 	cdpdiskfileds12 := map[string]interface{}{
+		"cdpId":        2,
 		"state":        2,
 		"mode":         1,
 		"encryptMode":  1,
@@ -86,9 +88,10 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpDiskTags21 := map[string]interface{}{
 		"clientIp": "192.168.1.53",
 		"agentId":  1,
-		"cdpId":    4,
+		"diskId":   255,
 	}
 	cdpDiskFileds21 := map[string]interface{}{
+		"cdpId":        4,
 		"state":        3,
 		"mode":         2,
 		"encryptMode":  0,

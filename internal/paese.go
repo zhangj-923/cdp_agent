@@ -56,9 +56,10 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 			cdpDiskTags := map[string]interface{}{
 				"clientIp": diskInfo["IP"].(string),
 				"agentId":  int(diskInfo["AgentId"].(float64)),
-				"cdpId":    int(disk["CdpId"].(float64)),
+				"diskId":   int(disk["DiskId"].(float64)),
 			}
 			cdpDiskFileds := map[string]interface{}{
+				"cdpId":        int(disk["CdpId"].(float64)),
 				"state":        int(disk["State"].(float64)),
 				"mode":         int(disk["Mode"].(float64)),
 				"encryptMode":  int(disk["EncryptMode"].(float64)),
