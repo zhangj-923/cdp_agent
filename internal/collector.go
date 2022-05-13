@@ -247,7 +247,6 @@ func (c *collect) getDiskInfo(hostInfo map[string]interface{}, cookie string) ([
 				bytes, _ := json.Marshal(a)
 				saveToFile(fmt.Sprintf("%d_DiskInfo", c.entity.EntityID), string(bytes))
 			}
-			fmt.Println(a)
 			diskInfo = append(diskInfo, a)
 			// 结束在关闭
 			request.Body.Close()
