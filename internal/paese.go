@@ -19,8 +19,9 @@ func parseHostInfo(hostInfo map[string]interface{}, alertMetricDict map[string]s
 			}
 			cdpHostFileds := map[string]interface{}{
 				"agentVersion": host["AgentVersion"].(string),
-				"hostName":     host["Hostname"].(string),
+				"hostname":     host["Hostname"].(string),
 				"serverIp":     host["server_ip"].(string),
+				"offline":      int(host["Offline"].(float64)),
 			}
 
 			cdpHostMetrics, err := common.Format(cdpHostFileds, cdpHostTags, "cdp.hostinfo", alertMetricDict)
@@ -66,8 +67,12 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 				"backupRate":   disk["BackupRate"].(string),
 				"finishedRate": disk["FinishedRate"].(string),
 				"beginTime":    disk["BeginTime"].(string),
-				"endTime":      disk["EndTime"].(string),
 				"capacity":     disk["Capacity"].(float64),
+			}
+			if disk["EndTime"] != nil {
+				cdpDiskFileds["endTime"] = disk["EndTime"].(string)
+			} else {
+				cdpDiskFileds["endTime"] = ""
 			}
 			cdpDiskMetrics, err := common.Format(cdpDiskFileds, cdpDiskTags, "cdp.diskinfo", alertMetricDict)
 			if err != nil {

@@ -15,6 +15,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"hostname":     "whdata",
 		"agentVersion": "5.1.0.1",
 		"serverIp":     "192.168.1.83",
+		"offline":      0,
 	}
 	cdpHostMetrics11, err := common.Format(cdpHostFileds11, cdpHostTags11, "cdp.hostinfo", alertMetricDict)
 	if err != nil {
@@ -77,6 +78,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"hostname":     "USER-M650SN7FHL",
 		"agentVersion": "5.2.0.0",
 		"serverIp":     "192.168.1.78",
+		"offline":      0,
 	}
 	cdpHostMetrics21, err := common.Format(cdpHostFileds21, cdpHostTags21, "cdp.hostinfo", alertMetricDict)
 	if err != nil {
@@ -116,6 +118,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"hostname":     "backup",
 		"agentVersion": "5.2.0.0",
 		"serverIp":     "192.168.1.78",
+		"offline":      180,
 	}
 	cdpHostMetrics22, err := common.Format(cdpHostFileds22, cdpHostTags22, "cdp.hostinfo", alertMetricDict)
 	if err != nil {

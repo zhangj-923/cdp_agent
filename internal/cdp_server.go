@@ -21,7 +21,7 @@ type Resp struct {
 
 type Auth struct {
 	Ipaddr   string `json:"ip"`
-	Port     int    `json:"port"`
+	Port     string `json:"port"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -73,7 +73,7 @@ func verify(writer http.ResponseWriter, request *http.Request) {
 func getData(auth Auth) int {
 	fmt.Println("当前验证ip：", auth.Ipaddr)
 	common.Info.Println("当前验证ip：", auth.Ipaddr)
-	URL := UrltoEncode(fmt.Sprintf("http://%s:%d//api/login", auth.Ipaddr, auth.Port))
+	URL := UrltoEncode(fmt.Sprintf("http://%s:%s//api/login", auth.Ipaddr, auth.Port))
 	contentType := "application/json"
 	str := fmt.Sprintf(`{"username":"%s","password":"%s"}`, auth.Username, auth.Password)
 	key := []byte("silvanware123456")
