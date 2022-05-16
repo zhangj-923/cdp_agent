@@ -51,6 +51,9 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 					break
 				}
 			}
+			if flag == false && disk["EndTime"] != nil {
+				flag = true
+			}
 			if !flag {
 				continue
 			}
