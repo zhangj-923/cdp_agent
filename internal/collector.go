@@ -332,7 +332,6 @@ func (c *collect) getCookieInfo() (string, error) {
 			cookie = cookie + ";"
 		}
 	}
-	fmt.Printf("cookie : %s \n", cookie)
 	common.Info.Printf("cookie : %s \n", cookie)
 	return cookie, nil
 }

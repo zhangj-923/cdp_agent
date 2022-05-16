@@ -51,7 +51,7 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 					break
 				}
 			}
-			if flag == false && disk["EndTime"] != nil {
+			if !flag && disk["EndTime"] != nil {
 				flag = true
 			}
 			if !flag {
@@ -60,7 +60,7 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 			cdpDiskTags := map[string]interface{}{
 				"clientIp": diskInfo["IP"].(string),
 				"agentId":  int(diskInfo["AgentId"].(float64)),
-				"diskId":   int(disk["DiskId"].(float64)),
+				"diskId":   disk["DiskGuid"].(string),
 			}
 			cdpDiskFileds := map[string]interface{}{
 				"cdpId":        int(disk["CdpId"].(float64)),
