@@ -2,6 +2,7 @@ package internal
 
 import (
 	"cdp_agent/common"
+	"strconv"
 )
 
 func parseHostInfo(hostInfo map[string]interface{}, alertMetricDict map[string]string) []*common.Metric {
@@ -16,12 +17,18 @@ func parseHostInfo(hostInfo map[string]interface{}, alertMetricDict map[string]s
 			cdpHostTags := map[string]interface{}{
 				"clientIp": host["IP"].(string),
 				"agentId":  int(host["AgentId"].(float64)),
+				"sub_key":  host["Hostname"].(string),
 			}
 			cdpHostFileds := map[string]interface{}{
 				"agentVersion": host["AgentVersion"].(string),
 				"hostname":     host["Hostname"].(string),
 				"serverIp":     host["server_ip"].(string),
-				"offline":      int(host["Offline"].(float64)),
+				"Delaytime":    int(host["Offline"].(float64)),
+			}
+			if host["Offline"].(float64) > 0 {
+				cdpHostFileds["offline"] = 1
+			} else {
+				cdpHostFileds["offline"] = 0
 			}
 
 			cdpHostMetrics, err := common.Format(cdpHostFileds, cdpHostTags, "cdp.hostinfo", alertMetricDict)
@@ -61,6 +68,7 @@ func parseDiskInfo(infos []map[string]interface{}, alertMetricDict map[string]st
 				"clientIp": diskInfo["IP"].(string),
 				"agentId":  int(diskInfo["AgentId"].(float64)),
 				"diskId":   disk["DiskGuid"].(string),
+				"sub_key":  diskInfo["IP"].(string) + ":" + strconv.FormatFloat(disk["CdpId"].(float64), 'E', -1, 64),
 			}
 			cdpDiskFileds := map[string]interface{}{
 				"cdpId":        int(disk["CdpId"].(float64)),

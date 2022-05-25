@@ -10,12 +10,14 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpHostTags11 := map[string]interface{}{
 		"clientIp": "192.168.1.75",
 		"agentId":  1,
+		"sub_key":  "whdata",
 	}
 	cdpHostFileds11 := map[string]interface{}{
 		"hostname":     "whdata",
 		"agentVersion": "5.1.0.1",
 		"serverIp":     "192.168.1.83",
 		"offline":      0,
+		"Delaytime":    0,
 	}
 	cdpHostMetrics11, err := common.Format(cdpHostFileds11, cdpHostTags11, "cdp.hostinfo", alertMetricDict)
 	if err != nil {
@@ -28,6 +30,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"clientIp": "192.168.1.75",
 		"agentId":  1,
 		"diskId":   "1c002b62-0050-5691-53c5-e3d6a7288005",
+		"sub_key":  "192.168.1.75:1",
 	}
 	cdpDiskFileds11 := map[string]interface{}{
 		"cdpId":        1,
@@ -51,6 +54,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"clientIp": "192.168.1.75",
 		"agentId":  1,
 		"diskId":   "21002b62-0050-5691-53c5-a52f97af1705",
+		"sub_key":  "192.168.1.75:2",
 	}
 	cdpdiskfileds12 := map[string]interface{}{
 		"cdpId":        2,
@@ -73,12 +77,14 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpHostTags21 := map[string]interface{}{
 		"clientIp": "192.168.1.53",
 		"agentId":  1,
+		"sub_key":  "USER-M650SN7FHL",
 	}
 	cdpHostFileds21 := map[string]interface{}{
 		"hostname":     "USER-M650SN7FHL",
 		"agentVersion": "5.2.0.0",
 		"serverIp":     "192.168.1.78",
 		"offline":      0,
+		"Delaytime":    0,
 	}
 	cdpHostMetrics21, err := common.Format(cdpHostFileds21, cdpHostTags21, "cdp.hostinfo", alertMetricDict)
 	if err != nil {
@@ -91,6 +97,7 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 		"clientIp": "192.168.1.53",
 		"agentId":  1,
 		"diskId":   "255",
+		"sub_key":  "192.168.1.53:4",
 	}
 	cdpDiskFileds21 := map[string]interface{}{
 		"cdpId":        4,
@@ -113,12 +120,14 @@ func MockData(alertMetricDict map[string]string) []*common.Metric {
 	cdpHostTags22 := map[string]interface{}{
 		"clientIp": "192.168.1.54",
 		"agentId":  2,
+		"sub_key":  "backup",
 	}
 	cdpHostFileds22 := map[string]interface{}{
 		"hostname":     "backup",
 		"agentVersion": "5.2.0.0",
 		"serverIp":     "192.168.1.78",
-		"offline":      180,
+		"offline":      1,
+		"Delaytime":    180,
 	}
 	cdpHostMetrics22, err := common.Format(cdpHostFileds22, cdpHostTags22, "cdp.hostinfo", alertMetricDict)
 	if err != nil {

@@ -54,7 +54,8 @@ func (c *collect) init() {
 	c.startTime = time.Now().Add(m).Format("2006-01-02 15:04:05")
 	c.endTime = time.Now().Format("2006-01-02 15:04:05")
 	c.alertMetricDict = map[string]string{
-		"state": "ent.job.state",
+		"state":   "ent.job.state",
+		"offline": "silvanware.conn.status",
 	}
 }
 
