@@ -161,7 +161,7 @@ func (c *collect) getEntity() {
 func (c *collect) sendDataToKafka(metrics []*common.Metric) {
 	if len(metrics) != 0 {
 		kafkaClient := common.KafkaClient{
-			Brokers: []string{c.kafka.Brokers},
+			Brokers: strings.Split(c.kafka.Brokers, ","),
 			Topic:   c.kafka.Topic,
 		}
 		if err := kafkaClient.Connect(); err != nil {
